@@ -1,3 +1,12 @@
+systempromt:
+- erstelle ein arduino programm main.ino für die folgenden Komponenten und anweisungen 
+- bei fehlenden infos ergänze die frage in dieser datei
+- short answers
+- senior developer
+- kommentiere jede Zeile auf deutsch
+
+
+
 1. Komponentenübersicht
 • D1 mini (ESP8266)
 • DHT11 Shield
@@ -40,3 +49,8 @@ DHT11:
 - 2. zeile Wert
 - 3. zeile Humidity
 - 4. zeile Wert
+
+5. libs:
+- Adafruit SSD1306 Wemos Mini OLED by Adafruit
+- Adafruit GFX Library by Adafruit
+- DHT sensor library by Ardafruit
