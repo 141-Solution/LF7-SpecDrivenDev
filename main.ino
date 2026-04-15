@@ -154,65 +154,40 @@ void messung_durchfuehren() {
 
 /**
  * Funktion: display_aktualisieren()
- * Beschreibung: Zeigt Temperatur und Luftfeuchtigkeit auf OLED Display an
- * Layout (64x48px) - zentrierte Werte, dekorativer Rahmen:
- *   y= 1: Rahmen (drawRect)
- *   y= 3: "TEMP"  Label klein, zentriert
- *   y=11: Temperaturwert gross, dynamisch zentriert
- *   y=25: Trennlinie
- *   y=27: "HUMI"  Label klein, zentriert
- *   y=35: Feuchtigkeitswert gross, dynamisch zentriert
+ * Beschreibung: Zeigt Temperatur und Luftfeuchtigkeit auf dem 64x48 OLED Display
+ * Layout: 3 Zeilen bei textSize 2 (16px pro Zeile = 48px gesamt)
+ *   Zeile 1 (y=0):  Temperaturwert z.B. "23.5C"
+ *   Zeile 2 (y=16): Trennlinie (doppelt, 2px dick)
+ *   Zeile 3 (y=32): Feuchtigkeitswert z.B. "45.2%"
  */
 void display_aktualisieren() {
   // Lösche den kompletten Display-Puffer
   display.clearDisplay();
-
-  // Äußerer Rahmen (dekorativer 1px Rand)
-  display.drawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SSD1306_WHITE);
-
   display.setTextColor(SSD1306_WHITE);
+  display.setTextSize(2);             // Schriftgröße 2: 12px breit, 16px hoch
 
-  // ---- TEMPERATUR (obere Haelfte) ----
-
-  // Label "TEMP" zentriert: 4 Zeichen x 6px = 24px → x=(64-24)/2=20
-  display.setTextSize(1);
-  display.setCursor(20, 3);
-  display.print("TEMP");
-
-  // Wert als String formatieren und dynamisch zentrieren
-  // Schriftgroesse 2: 12px pro Zeichen, 16px Zeilenhoehe
-  char tempBuf[8];
-  dtostrf(temperatur, 1, 1, tempBuf); // Minimalbreite, 1 Nachkommastelle
-  strcat(tempBuf, "C");               // Einheit anhaengen
-  int tX = max(2, (SCREEN_WIDTH - (int)strlen(tempBuf) * 12) / 2); // Zentriert
-  display.setTextSize(2);
-  display.setCursor(tX, 11);
+  // --- Zeile 1: Temperatur ---
+  char tempBuf[7];
+  dtostrf(temperatur, 1, 1, tempBuf); // z.B. "23.5"
+  strcat(tempBuf, "C");               // z.B. "23.5C"
+  // Dynamisch horizontal zentrieren (12px pro Zeichen)
+  int tX = (SCREEN_WIDTH - (int)strlen(tempBuf) * 12) / 2;
+  display.setCursor(tX, 0);
   display.print(tempBuf);
 
-  // ---- TRENNLINIE ----
-  display.drawFastHLine(1, 25, SCREEN_WIDTH - 2, SSD1306_WHITE);
+  // --- Zeile 2: Trennlinie (mittig im 16px Block) ---
+  display.drawFastHLine(4, 23, SCREEN_WIDTH - 8, SSD1306_WHITE);
+  display.drawFastHLine(4, 24, SCREEN_WIDTH - 8, SSD1306_WHITE);
 
-  // ---- LUFTFEUCHTIGKEIT (untere Haelfte) ----
-
-  // Label "HUMI" zentriert
-  display.setTextSize(1);
-  display.setCursor(20, 27);
-  display.print("HUMI");
-
-  // Wert dynamisch zentrieren (Sonderfall: 100% passt ohne Nachkommastelle)
-  char humiBuf[8];
-  if (luftfeuchtigkeit >= 100.0f) {
-    strncpy(humiBuf, "100%", sizeof(humiBuf));
-  } else {
-    dtostrf(luftfeuchtigkeit, 1, 1, humiBuf);
-    strcat(humiBuf, "%");
-  }
-  int hX = max(2, (SCREEN_WIDTH - (int)strlen(humiBuf) * 12) / 2);
-  display.setTextSize(2);
-  display.setCursor(hX, 35);
+  // --- Zeile 3: Luftfeuchtigkeit ---
+  char humiBuf[7];
+  dtostrf(luftfeuchtigkeit, 1, 1, humiBuf); // z.B. "45.2"
+  strcat(humiBuf, "%");                      // z.B. "45.2%"
+  int hX = (SCREEN_WIDTH - (int)strlen(humiBuf) * 12) / 2;
+  display.setCursor(hX, 32);
   display.print(humiBuf);
 
-  // Alle Aenderungen auf das physische Display schreiben
+  // Änderungen auf das physische Display schreiben
   display.display();
 }
 
