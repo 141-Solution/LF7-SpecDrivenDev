@@ -24,7 +24,7 @@
 #define DISP_WIDTH 64                // Sichtbare Breite in Pixeln
 #define DISP_HEIGHT 48               // Sichtbare Höhe in Pixeln
 #define X_OFFSET 32                  // Spalten-Offset im SSD1306 Framebuffer
-#define Y_OFFSET 0                   // Zeilen-Offset im SSD1306 Framebuffer
+#define Y_OFFSET 12                   // Zeilen-Offset im SSD1306 Framebuffer
 
 // DHT11 Sensor Konfiguration
 #define DHTPIN D4                    // DHT11 Datenleitung an GPIO2 (D4) angeschlossen
