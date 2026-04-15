@@ -8,19 +8,19 @@
 - I2C Adresse:				0x3C/0x3D
 - 
 • DHT11:
-- Kommunikationsschnittstelle:	I2C
-- I2C Adresse:				0x3C/0x3D
+- Kommunikationsschnittstelle:	Single-Wire-Digitalinterface
+- I2C Adresse:				nicht zutreffend
 
 3. Relevante technische Daten
 OLED:
 • OLED-Auflösung: 0.66" 64x48
 • OLED-Treiber-IC: SSD1306
-DH11:
+DHT11:
 - Arbeitsbereich Temperatur:		40-80Grad
 - Arbeitsbereich Luftfeuchtigkeit:	0-100%RH
 - Genauigkeit Temperatur:		<+-0,5Grad
 - Genauigkeit Luftfeuchtigkeit:		+-2-5%
-- Auflösung Temperatur:		0,1% Grad
+- Auflösung Temperatur:		0,1 Grad
 - Auflösung Luftfeuchtigkeit:		0,1% RH
 
 4. Funktionsanforderungen an den Prototyp
@@ -30,13 +30,13 @@ DH11:
 • Fehlerausgabe bei ungültiger Messung
 5. Darstellungsanforderungen (Display)
 • Welche Werte sollen angezeigt werden?
-- darstellung von Temperatur und Luftfeuchtigkeit
+- Darstellung von Temperatur und Luftfeuchtigkeit
 • Mit welchen Einheiten?
 - in °C und RH%
 • Mit wie vielen Nachkommastellen?
-- 2 nachkommastellen
+- 2 Nachkommastellen
 • Wie wird mit dem begrenzten Displayplatz umgegangen
 - 1. zeile Temperatur
 - 2. zeile Wert
-- 3. Zeile Humidity
-- 4. Zeile Wert
+- 3. zeile Humidity
+- 4. zeile Wert
