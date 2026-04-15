@@ -155,43 +155,64 @@ void messung_durchfuehren() {
 /**
  * Funktion: display_aktualisieren()
  * Beschreibung: Zeigt Temperatur und Luftfeuchtigkeit auf OLED Display an
- * Layout (64x48px):
- *   y= 0- 7  -> "TEMP"  Label  (Schriftgroesse 1, 8px)
- *   y= 8-23  -> Wert          (Schriftgroesse 2, 16px)
- *   y=24-31  -> "HUMI"  Label  (Schriftgroesse 1, 8px)
- *   y=32-47  -> Wert          (Schriftgroesse 2, 16px)
+ * Layout (64x48px) - zentrierte Werte, dekorativer Rahmen:
+ *   y= 1: Rahmen (drawRect)
+ *   y= 3: "TEMP"  Label klein, zentriert
+ *   y=11: Temperaturwert gross, dynamisch zentriert
+ *   y=25: Trennlinie
+ *   y=27: "HUMI"  Label klein, zentriert
+ *   y=35: Feuchtigkeitswert gross, dynamisch zentriert
  */
 void display_aktualisieren() {
   // Lösche den kompletten Display-Puffer
   display.clearDisplay();
 
-  // --- TEMPERATUR LABEL (Zeile 1, klein) ---
-  display.setTextSize(1);              // Schriftgröße 1 → 8px Zeilenhöhe
-  display.setTextColor(SSD1306_WHITE); // Schriftfarbe Weiß
-  display.setCursor(0, 0);            // Cursor oben links
+  // Äußerer Rahmen (dekorativer 1px Rand)
+  display.drawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SSD1306_WHITE);
+
+  display.setTextColor(SSD1306_WHITE);
+
+  // ---- TEMPERATUR (obere Haelfte) ----
+
+  // Label "TEMP" zentriert: 4 Zeichen x 6px = 24px → x=(64-24)/2=20
+  display.setTextSize(1);
+  display.setCursor(20, 3);
   display.print("TEMP");
 
-  // --- TEMPERATURWERT (Zeile 2, groß) ---
-  display.setTextSize(2);              // Schriftgröße 2 → 16px Zeilenhöhe
-  display.setCursor(0, 8);            // Direkt unter dem Label
-  display.print(temperatur, 1);       // 1 Nachkommastelle (Platz für Einheit)
-  display.print("\xF7""C");           // Gradzeichen + C (0xF7 = ° im GFX-Font)
+  // Wert als String formatieren und dynamisch zentrieren
+  // Schriftgroesse 2: 12px pro Zeichen, 16px Zeilenhoehe
+  char tempBuf[8];
+  dtostrf(temperatur, 1, 1, tempBuf); // Minimalbreite, 1 Nachkommastelle
+  strcat(tempBuf, "C");               // Einheit anhaengen
+  int tX = max(2, (SCREEN_WIDTH - (int)strlen(tempBuf) * 12) / 2); // Zentriert
+  display.setTextSize(2);
+  display.setCursor(tX, 11);
+  display.print(tempBuf);
 
-  // --- TRENNLINIE ---
-  display.drawFastHLine(0, 23, SCREEN_WIDTH, SSD1306_WHITE); // Horizontale Linie
+  // ---- TRENNLINIE ----
+  display.drawFastHLine(1, 25, SCREEN_WIDTH - 2, SSD1306_WHITE);
 
-  // --- LUFTFEUCHTE LABEL (Zeile 3, klein) ---
+  // ---- LUFTFEUCHTIGKEIT (untere Haelfte) ----
+
+  // Label "HUMI" zentriert
   display.setTextSize(1);
-  display.setCursor(0, 25);           // 1px Abstand zur Trennlinie
+  display.setCursor(20, 27);
   display.print("HUMI");
 
-  // --- LUFTFEUCHTIGKEITSWERT (Zeile 4, groß) ---
+  // Wert dynamisch zentrieren (Sonderfall: 100% passt ohne Nachkommastelle)
+  char humiBuf[8];
+  if (luftfeuchtigkeit >= 100.0f) {
+    strncpy(humiBuf, "100%", sizeof(humiBuf));
+  } else {
+    dtostrf(luftfeuchtigkeit, 1, 1, humiBuf);
+    strcat(humiBuf, "%");
+  }
+  int hX = max(2, (SCREEN_WIDTH - (int)strlen(humiBuf) * 12) / 2);
   display.setTextSize(2);
-  display.setCursor(0, 33);           // Direkt unter dem Label
-  display.print(luftfeuchtigkeit, 1); // 1 Nachkommastelle
-  display.print("%");
+  display.setCursor(hX, 35);
+  display.print(humiBuf);
 
-  // Schreibe alle Änderungen auf das physische Display
+  // Alle Aenderungen auf das physische Display schreiben
   display.display();
 }
 
