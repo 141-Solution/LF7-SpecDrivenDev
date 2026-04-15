@@ -155,36 +155,44 @@ void messung_durchfuehren() {
 /**
  * Funktion: display_aktualisieren()
  * Beschreibung: Zeigt Temperatur und Luftfeuchtigkeit auf dem 64x48 OLED Display
- * Layout: 3 Zeilen bei textSize 2 (16px pro Zeile = 48px gesamt)
- *   Zeile 1 (y=0):  Temperaturwert z.B. "23.5C"
- *   Zeile 2 (y=16): Trennlinie (doppelt, 2px dick)
- *   Zeile 3 (y=32): Feuchtigkeitswert z.B. "45.2%"
+ * Layout: textSize 1 (6x8px pro Zeichen, 6 Zeilen verfuegbar)
+ *   y= 4: "Temp:" Label
+ *   y=12: Temperaturwert z.B. " 23.5 C"
+ *   y=23: Trennlinie
+ *   y=28: "Humi:" Label
+ *   y=36: Feuchtigkeitswert z.B. " 45.2 %"
  */
 void display_aktualisieren() {
   // Lösche den kompletten Display-Puffer
   display.clearDisplay();
   display.setTextColor(SSD1306_WHITE);
-  display.setTextSize(2);             // Schriftgröße 2: 12px breit, 16px hoch
+  display.setTextSize(1);             // Schriftgröße 1: 6px breit, 8px hoch
 
-  // --- Zeile 1: Temperatur ---
-  char tempBuf[7];
+  // --- Temperatur Label ---
+  display.setCursor(17, 4);           // "Temp:" zentriert (5*6=30px → x=(64-30)/2≈17)
+  display.print("Temp:");
+
+  // --- Temperaturwert ---
+  char tempBuf[11];
   dtostrf(temperatur, 1, 1, tempBuf); // z.B. "23.5"
-  strcat(tempBuf, "C");               // z.B. "23.5C"
-  // Dynamisch horizontal zentrieren (12px pro Zeichen)
-  int tX = (SCREEN_WIDTH - (int)strlen(tempBuf) * 12) / 2;
-  display.setCursor(tX, 0);
+  strcat(tempBuf, " C");              // z.B. "23.5 C"
+  int tX = (SCREEN_WIDTH - (int)strlen(tempBuf) * 6) / 2;
+  display.setCursor(tX, 14);
   display.print(tempBuf);
 
-  // --- Zeile 2: Trennlinie (mittig im 16px Block) ---
+  // --- Trennlinie ---
   display.drawFastHLine(4, 23, SCREEN_WIDTH - 8, SSD1306_WHITE);
-  display.drawFastHLine(4, 24, SCREEN_WIDTH - 8, SSD1306_WHITE);
 
-  // --- Zeile 3: Luftfeuchtigkeit ---
-  char humiBuf[7];
+  // --- Luftfeuchte Label ---
+  display.setCursor(17, 26);          // "Humi:" zentriert
+  display.print("Humi:");
+
+  // --- Feuchtigkeitswert ---
+  char humiBuf[11];
   dtostrf(luftfeuchtigkeit, 1, 1, humiBuf); // z.B. "45.2"
-  strcat(humiBuf, "%");                      // z.B. "45.2%"
-  int hX = (SCREEN_WIDTH - (int)strlen(humiBuf) * 12) / 2;
-  display.setCursor(hX, 32);
+  strcat(humiBuf, " %");                     // z.B. "45.2 %"
+  int hX = (SCREEN_WIDTH - (int)strlen(humiBuf) * 6) / 2;
+  display.setCursor(hX, 36);
   display.print(humiBuf);
 
   // Änderungen auf das physische Display schreiben
