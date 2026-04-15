@@ -14,10 +14,17 @@
 // ============================================================================
 
 // OLED Display Konfiguration
-#define SCREEN_WIDTH 64              // OLED Display Breite in Pixeln
-#define SCREEN_HEIGHT 48             // OLED Display Höhe in Pixeln
+#define SCREEN_WIDTH 128             // SSD1306 Framebuffer Breite (volle Auflösung)
+#define SCREEN_HEIGHT 64             // SSD1306 Framebuffer Höhe (volle Auflösung)
 #define OLED_RESET -1                // OLED Reset Pin (nicht verwendet, -1)
 #define OLED_ADDRESS 0x3C            // I2C Adresse des OLED Displays (0x3C oder 0x3D)
+
+// Sichtbarer Bereich des 0.66" Wemos OLED Shields (64x48 Pixel)
+// Das Display zeigt nur Spalten 32-95 und Zeilen 0-47 des SSD1306-Buffers
+#define DISP_WIDTH 64                // Sichtbare Breite in Pixeln
+#define DISP_HEIGHT 48               // Sichtbare Höhe in Pixeln
+#define X_OFFSET 32                  // Spalten-Offset im SSD1306 Framebuffer
+#define Y_OFFSET 0                   // Zeilen-Offset im SSD1306 Framebuffer
 
 // DHT11 Sensor Konfiguration
 #define DHTPIN D4                    // DHT11 Datenleitung an GPIO2 (D4) angeschlossen
@@ -87,7 +94,8 @@ void setup() {
   display.setCursor(0, 0);            // Setze Cursor auf Position (0,0)
   
   // Zeige Initialisierungsmeldung
-  display.println("Initalisierung...");
+  display.setCursor(X_OFFSET, Y_OFFSET);
+  display.println("Init...");
   display.display();                  // Schreibe Änderungen auf das Display
   
   Serial.println("OLED Display initialisiert");
@@ -155,12 +163,14 @@ void messung_durchfuehren() {
 /**
  * Funktion: display_aktualisieren()
  * Beschreibung: Zeigt Temperatur und Luftfeuchtigkeit auf dem 64x48 OLED Display
- * Layout: textSize 1 (6x8px pro Zeichen, 6 Zeilen verfuegbar)
+ * Hinweis: Alle Koordinaten werden um X_OFFSET/Y_OFFSET verschoben,
+ *          da der SSD1306 einen 128x64 Puffer hat, aber nur 64x48 sichtbar sind.
+ * Layout: textSize 1 (6x8px pro Zeichen)
  *   y= 4: "Temp:" Label
- *   y=12: Temperaturwert z.B. " 23.5 C"
+ *   y=14: Temperaturwert z.B. "23.5 C"
  *   y=23: Trennlinie
- *   y=28: "Humi:" Label
- *   y=36: Feuchtigkeitswert z.B. " 45.2 %"
+ *   y=26: "Humi:" Label
+ *   y=36: Feuchtigkeitswert z.B. "45.2 %"
  */
 void display_aktualisieren() {
   // Lösche den kompletten Display-Puffer
@@ -169,30 +179,31 @@ void display_aktualisieren() {
   display.setTextSize(1);             // Schriftgröße 1: 6px breit, 8px hoch
 
   // --- Temperatur Label ---
-  display.setCursor(17, 4);           // "Temp:" zentriert (5*6=30px → x=(64-30)/2≈17)
+  // "Temp:" zentriert: 5 Zeichen x 6px = 30px → x = (64-30)/2 = 17
+  display.setCursor(X_OFFSET + 17, Y_OFFSET + 4);
   display.print("Temp:");
 
   // --- Temperaturwert ---
   char tempBuf[11];
   dtostrf(temperatur, 1, 1, tempBuf); // z.B. "23.5"
   strcat(tempBuf, " C");              // z.B. "23.5 C"
-  int tX = (SCREEN_WIDTH - (int)strlen(tempBuf) * 6) / 2;
-  display.setCursor(tX, 14);
+  int tX = X_OFFSET + (DISP_WIDTH - (int)strlen(tempBuf) * 6) / 2;
+  display.setCursor(tX, Y_OFFSET + 14);
   display.print(tempBuf);
 
   // --- Trennlinie ---
-  display.drawFastHLine(4, 23, SCREEN_WIDTH - 8, SSD1306_WHITE);
+  display.drawFastHLine(X_OFFSET + 4, Y_OFFSET + 23, DISP_WIDTH - 8, SSD1306_WHITE);
 
   // --- Luftfeuchte Label ---
-  display.setCursor(17, 26);          // "Humi:" zentriert
+  display.setCursor(X_OFFSET + 17, Y_OFFSET + 26);
   display.print("Humi:");
 
   // --- Feuchtigkeitswert ---
   char humiBuf[11];
   dtostrf(luftfeuchtigkeit, 1, 1, humiBuf); // z.B. "45.2"
   strcat(humiBuf, " %");                     // z.B. "45.2 %"
-  int hX = (SCREEN_WIDTH - (int)strlen(humiBuf) * 6) / 2;
-  display.setCursor(hX, 36);
+  int hX = X_OFFSET + (DISP_WIDTH - (int)strlen(humiBuf) * 6) / 2;
+  display.setCursor(hX, Y_OFFSET + 36);
   display.print(humiBuf);
 
   // Änderungen auf das physische Display schreiben
