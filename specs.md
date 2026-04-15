@@ -8,8 +8,8 @@
 • DHT11:
 - 
 3. Relevante technische Daten
-• OLED-Auflösung: 
-• OLED-Treiber-IC:
+• OLED-Auflösung: 0.66" 64x48
+• OLED-Treiber-IC: 
 • DHT11-Messbereich Temperatur:
 • DHT11-Messbereich Luftfeuchtigkeit:
 • DHT11-Samplingrate:
@@ -23,6 +23,11 @@
 • Welche Werte sollen angezeigt werden?
 - darstellung von Temperatur und Luftfeuchtigkeit
 • Mit welchen Einheiten?
-- in °C und 
+- in °C und RH%
 • Mit wie vielen Nachkommastellen?
+- 2 nachkommastellen
 • Wie wird mit dem begrenzten Displayplatz umgegangen
+- 1. zeile Temperatur
+- 2. zeile Wert
+- 3. Zeile Humidity
+- 4. Zeile Wert
