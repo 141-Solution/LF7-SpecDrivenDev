@@ -155,32 +155,42 @@ void messung_durchfuehren() {
 /**
  * Funktion: display_aktualisieren()
  * Beschreibung: Zeigt Temperatur und Luftfeuchtigkeit auf OLED Display an
- * Format: 4 Zeilen (Label und Wert für jeden Messwert)
+ * Layout (64x48px):
+ *   y= 0- 7  -> "TEMP"  Label  (Schriftgroesse 1, 8px)
+ *   y= 8-23  -> Wert          (Schriftgroesse 2, 16px)
+ *   y=24-31  -> "HUMI"  Label  (Schriftgroesse 1, 8px)
+ *   y=32-47  -> Wert          (Schriftgroesse 2, 16px)
  */
 void display_aktualisieren() {
   // Lösche den kompletten Display-Puffer
   display.clearDisplay();
-  
-  // Setze Cursor auf das Anfang des Display (0x=0, y=0)
-  display.setCursor(0, 0);
-  
-  // Setze Schriftgröße auf 1 (klein)
+
+  // --- TEMPERATUR LABEL (Zeile 1, klein) ---
+  display.setTextSize(1);              // Schriftgröße 1 → 8px Zeilenhöhe
+  display.setTextColor(SSD1306_WHITE); // Schriftfarbe Weiß
+  display.setCursor(0, 0);            // Cursor oben links
+  display.print("TEMP");
+
+  // --- TEMPERATURWERT (Zeile 2, groß) ---
+  display.setTextSize(2);              // Schriftgröße 2 → 16px Zeilenhöhe
+  display.setCursor(0, 8);            // Direkt unter dem Label
+  display.print(temperatur, 1);       // 1 Nachkommastelle (Platz für Einheit)
+  display.print("\xF7""C");           // Gradzeichen + C (0xF7 = ° im GFX-Font)
+
+  // --- TRENNLINIE ---
+  display.drawFastHLine(0, 23, SCREEN_WIDTH, SSD1306_WHITE); // Horizontale Linie
+
+  // --- LUFTFEUCHTE LABEL (Zeile 3, klein) ---
   display.setTextSize(1);
-  
-  // Zeige Temperatur-Label in der 1. Zeile
-  display.println("Temp:");
-  
-  // Zeige Temperaturwert in der 2. Zeile (mit 2 Nachkommastellen)
-  display.print(temperatur, 2);
-  display.println(" C");
-  
-  // Zeige Luftfeuchte-Label in der 3. Zeile
-  display.println("Humidity:");
-  
-  // Zeige Luftfeuchte-Wert in der 4. Zeile (mit 2 Nachkommastellen)
-  display.print(luftfeuchtigkeit, 2);
-  display.println(" %");
-  
+  display.setCursor(0, 25);           // 1px Abstand zur Trennlinie
+  display.print("HUMI");
+
+  // --- LUFTFEUCHTIGKEITSWERT (Zeile 4, groß) ---
+  display.setTextSize(2);
+  display.setCursor(0, 33);           // Direkt unter dem Label
+  display.print(luftfeuchtigkeit, 1); // 1 Nachkommastelle
+  display.print("%");
+
   // Schreibe alle Änderungen auf das physische Display
   display.display();
 }
